@@ -63,7 +63,7 @@ assert(foo == Foo("bar"))
 
 // Extension methods
 implicit class StringOps(string: String) {
-  def yell = string.toUpperCase + "!!1"
+  def yell: String = string.toUpperCase + "!!1"
 }
 
 assert("hello".yell == "HELLO!!1")
@@ -99,4 +99,4 @@ implicit object IntRenderer extends Renderer[Int] {
 }
 
 render(42)
-//render(42.0) / doesn't compile
+//render(42.0) // doesn't compile

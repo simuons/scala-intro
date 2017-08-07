@@ -13,6 +13,18 @@ trait ProtocolWithStateAndPartialImplementation {
   }
 }
 
+// Self type annotations
+
+trait A
+
+trait B {
+  a: A =>
+}
+
+class C extends A with B
+
+//class X extends B
+
 // Stackable pattern
 
 abstract class Printer {

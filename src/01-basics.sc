@@ -4,35 +4,50 @@ import scala.annotation.tailrec
 //Named parameters
 //Default values
 //Methods/Nested-methods/Argument lists
-//Pass by name
+//Partially applied functions/Currying
+//Pass by name/value
 //Var-args
 //Expressions
 //Type inference
 //Objects/static methods/Constants
 //Package objects
 //case classes
-//Partial functions
+//Partially defined functions
 
-def factorial(i: Int): Long = {
-  @tailrec
-  def fact(i: Int, accumulator: Int): Long = {
-    if (i <= 1) accumulator
-    else fact(i - 1, i * accumulator)
-  }
+// Call by value/name
+def callByValue(i: Int) = s"$i $i $i"
+def callByName(i: => Int) = s"$i $i $i"
+def callByNameUnused(i: => Int) = {}
 
-  fact(i, 1)
-}
+val counter = new java.util.concurrent.atomic.AtomicInteger
+callByValue(counter.incrementAndGet())
+callByName(counter.incrementAndGet())
+val tmp = counter.get
+callByNameUnused(counter.incrementAndGet())
+tmp == counter.get
 
-factorial(5)
+// Partially applied functions
+def add(a: Int, b: Int) = a + b
 
-(1 to 5) foreach (i => println(factorial(i)))
+val add2 = add(2, _:Int)
 
-def fib(n: Int): Int = {
-  if (n <= 1) 1
-  else fib(n - 2) + fib(n - 1)
-}
+add2(6)
 
-// Partial functions
+def wrap(prefix: String)(html: String)(suffix: String) = prefix + html + suffix
+
+wrap("<div>")("Hi")("</div>")
+
+val div = wrap("<div>")(_: String)("</div>")
+
+div("Hello")
+
+// Currying
+val addFunction = add _ // (Int, Int) => Int
+val addCurry: (Int) => (Int) => Int = addFunction.curried
+
+addCurry(2)(3)
+
+// Partially defined functions
 val f1: PartialFunction[Any, String] = {
   case s: String => s"string: $s"
 }
@@ -62,26 +77,21 @@ for (i <- 1 to 15
      if i % 2 != 0
      if i % 5 == 0) yield i
 
+def factorial(i: Int): Long = {
+  @tailrec
+  def fact(i: Int, accumulator: Int): Long = {
+    if (i <= 1) accumulator
+    else fact(i - 1, i * accumulator)
+  }
 
-def callByValue(i: Int) = {
-  println("by value unused")
-}
-def callByNameUnused(i: => Int) = {
-  println("by name unused")
-}
-def callByName(i: => Int) = {
-  println(s"by name $i")
+  fact(i, 1)
 }
 
-callByValue({
-  println("calling")
-  42
-})
-callByNameUnused({
-  println("calling")
-  42
-})
-callByName({
-  println("calling")
-  42
-})
+factorial(5)
+
+(1 to 5) foreach (i => println(factorial(i)))
+
+def fib(n: Int): Int = {
+  if (n <= 1) 1
+  else fib(n - 2) + fib(n - 1)
+}
