@@ -1,24 +1,22 @@
-def fold[I, O](seq: Seq[I])(zero: O)(operation: (O, I) => O): O = seq match {
-  case head +: tail => fold(tail)(operation(zero, head))(operation)
+def fold[I, O](seq: Seq[I])(zero: O)(aggregate: (O, I) => O): O = seq match {
   case Nil => zero
+  case head +: tail => fold(tail)(aggregate(zero, head))(aggregate)
 }
 
-def reduce[T](seq: Seq[T])(operation: (T, T) => T): T = seq match {
-  case head +: tail => fold(tail)(head)(operation)
-  case Nil => throw new IllegalAccessException("Reduce is not supported for empty sequences")
+def reduce[T](seq: Seq[T])(aggregate: (T, T) => T): T = seq match {
+  case Nil => throw new IllegalArgumentException("Reduce is not supported for empty sequences")
+  case head +: tail => fold(tail)(head)(aggregate)
 }
 
 def filter[T](seq: Seq[T])(predicate: T => Boolean): Seq[T] =
   fold[T, Seq[T]](seq)(Seq.empty)((accumulator, value) =>
-    if (predicate(value))
-      accumulator :+ value
-    else
-      accumulator
+    if (predicate(value)) accumulator :+ value
+    else accumulator
   )
 
-def map[I, O](seq: Seq[I])(operation: I => O): Seq[O] =
-  fold[I, Seq[O]](seq)(Seq.empty)((accumulator: Seq[O], value: I) =>
-    accumulator :+ operation.apply(value)
+def map[I, O](seq: Seq[I])(transform: I => O): Seq[O] =
+  fold[I, Seq[O]](seq)(Seq.empty)((accumulator, value) =>
+    accumulator :+ transform(value)
   )
 
 assert(fold(1 to 5)(0)(_ + _) == 15)
