@@ -70,6 +70,10 @@ def iterative_with_vars(n: Int): Long = {
   result
 }
 
+val fibonacci$: Stream[Long] = 0 #:: 1 #:: fibonacci$.zip(fibonacci$.tail).map { case (n0, n1) => n0 + n1 }
+
+fibonacci$.take(10)
+
 Seq(
   "recursive" -> recursive _,
   "recursive with mem" -> recursive_with_memoization _,
