@@ -22,10 +22,8 @@ val examples = Seq(
 )
 
 def recursive(n: Int): Long = {
-  if (n <= 1)
-    n
-  else
-    recursive(n - 1) + recursive(n - 2)
+  if (n <= 1) n
+  else recursive(n - 1) + recursive(n - 2)
 }
 
 def recursive_with_memoization(n: Int): Long = {
@@ -43,14 +41,11 @@ def recursive_with_memoization(n: Int): Long = {
 
 def recursive_with_accumulator(n: Int): Long = {
   @tailrec
-  def calculate(acc: Long, n_1: Long, i: Int): Long = {
-    if (i == 0)
-      acc
-    else
-      calculate(acc + n_1, acc, i - 1)
-  }
+  def calculate(i: Int, accumulator: Long, next: Long): Long =
+    if (i == 0) accumulator
+    else calculate(i - 1, next, accumulator + next)
 
-  calculate(0, 1, n)
+  calculate(n, 0, 1)
 }
 
 def iterative_with_collection(n: Int): Long = {
@@ -64,15 +59,15 @@ def iterative_with_collection(n: Int): Long = {
 }
 
 def iterative_with_vars(n: Int): Long = {
-  var (n_0, n_1) = (0, 1)
+  var (result, next) = (0, 1)
 
   (1 to n).foreach { _ =>
-    val swap = n_0
-    n_0 = n_0 + n_1
-    n_1 = swap
+    val swap = result
+    result = result + next
+    next = swap
   }
 
-  n_0
+  result
 }
 
 Seq(
